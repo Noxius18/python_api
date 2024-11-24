@@ -1,6 +1,10 @@
 from flask import Flask
+from models import conn_db
 
 app = Flask(__name__)
+
+# Inisialisasi Database
+conn_db(app)
 
 @app.route("/")
 def hello():
