@@ -71,6 +71,36 @@ class CariBuku(Resource):
             abort(404, 'Buku Tidak Ditemukan')
         return buku
 
+class UpdateBuku(Resource):
+    # Update Buku berdasarkan ID
+    @marshal_with(buku_fields)
+    def patch(self, id):
+        args = buku_args.parse_args()
+        buku = BukuModel.query.filter_by(id=id).first()
+        if not buku:
+            abort(404, 'Buku Tidak Ditemukan')
+        buku.judul = args["judul"]
+        buku.deskripsi = args["deskripsi"]
+        buku.penulis = args["penulis"]
+        buku.genre = args["genre"]
+        buku.tahun = args["tahun"]
+        try:
+            db.session.commit()
+            return buku
+        except SQLAlchemyError as err:
+            abort(400, f"Kesalahan pada database {err}")
+
+    # Delete Buku berdasarkan ID
+    @marshal_with(buku_fields)
+    def delete(self, id):
+        buku = BukuModel.query.filter_by(id=id).first()
+        if not buku:
+            abort(404, 'Buku Tidak Ditemukan')
+        db.session.delete(buku)
+        db.session.commit()
+        update_buku = BukuModel.query.all()
+        return update_buku, 201
+
 
 def conn_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
