@@ -1,8 +1,9 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_restful import Resource, reqparse, fields, marshal_with, abort
 
 db = SQLAlchemy()
 
-class Buku(db.Model):
+class BukuModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     judul = db.Column(db.String(50), nullable=False)
     deskripsi = db.Column(db.String(255))
@@ -17,6 +18,18 @@ class Buku(db.Model):
             Penulis = {self.penulis},
             Genre = {self.genre},
             Tahun = {self.tahun})"""
+
+buku_args = reqparse.RequestParser()
+buku_args.add_argument('judul', type=str, required=True, help="Judul harus diisi")
+buku_args.add_argument('deskripsi', type=str, required=True, help="Deskripsi harus diisi")
+buku_args.add_argument('penulis', type=str, required=True, help="Penulis harus diisi")
+buku_args.add_argument('genre', type=str, required=True, help="Genre harus diisi")
+buku_args.add_argument('tahun', type=int, required=True, help="Tahun harus diisi")
+
+class Buku(Resource):
+    def get(self):
+        buku = BukuModel.query.all()
+        return buku
 
 def conn_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
