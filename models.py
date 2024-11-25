@@ -63,6 +63,15 @@ class Buku(Resource):
             db.session.rollback()
             abort(400, message=f"Kesalahan pada Database {err}")
 
+class CariBuku(Resource):
+    @marshal_with(buku_fields)
+    def get(self, id):
+        buku = BukuModel.query.filter_by(id=id).first()
+        if not buku:
+            abort(404, 'Buku Tidak Ditemukan')
+        return buku
+
+
 def conn_db(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.db'
     db.init_app(app)
