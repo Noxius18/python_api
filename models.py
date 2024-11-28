@@ -22,11 +22,17 @@ class BukuModel(db.Model):
 
 # Argument Parser untuk Valisasi Input (POST)
 buku_args = reqparse.RequestParser()
-buku_args.add_argument('judul', type=str, required=True, help="Judul harus diisi")
-buku_args.add_argument('deskripsi', type=str, required=True, help="Deskripsi harus diisi")
-buku_args.add_argument('penulis', type=str, required=True, help="Penulis harus diisi")
-buku_args.add_argument('genre', type=str, required=True, help="Genre harus diisi")
-buku_args.add_argument('tahun', type=int, required=True, help="Tahun harus diisi")
+
+list_args = [
+    ("judul", str, "Judul buku tidak boleh kosong dan harus berupa teks"),
+    ("deskripsi", str, "Tulis deskripsi untuk memberikan gambaran singkat tentang isi buku"),
+    ("penulis", str, "Nama Penulis tidak boleh kosong dan harus berupa teks"),
+    ("genre", str, "Genre buku tidak boleh kosong dan berupa teks, misalnya: (Fiksi) atau (Nonfiksi)"),
+    ("tahun", int, "Tahun berupa integer")
+]
+
+for arg_name, arg_type, arg_help in list_args:
+    buku_args.add_argument(arg_name, type=arg_type, required=True, help=arg_help)
 
 # Format Response (GET JSON)
 buku_fields = {
